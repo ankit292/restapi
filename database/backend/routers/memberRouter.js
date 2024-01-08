@@ -1,5 +1,6 @@
 const express = require("express");
 const router = new express.Router();
+const bcrypt = require("bcryptjs");
 
 // call Member scheema
 const Member = require("../model/members");
@@ -89,9 +90,18 @@ router.delete("/member/:id", async (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-    const member = new Member(req.body);
-    const craeteMember = await member.save();
-    res.status(200).send(craeteMember);
+    const { password, cpassword } = req.body;
+    if (password === cpassword) {
+      const member = new Member(req.body);
+
+      const token = await member.generatToken();
+      console.log(token);
+
+      const craeteMember = await member.save();
+      res.status(200).send(craeteMember);
+    }else{
+      res.send("Password invalid")
+    }
   } catch (error) {
     res.status(401).send("Not found " + error);
   }
@@ -101,8 +111,10 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    
     const findEmail = await Member.findOne({ email });
-    if (findEmail.email === email && findEmail.password === password) {
+    const comparePass = await bcrypt.compare(password, findEmail.password);
+    if ( comparePass === true) {
       res.send("Login Successfully");
       console.log("Login Successfully");
     } else {
@@ -112,5 +124,17 @@ router.post("/login", async (req, res) => {
     res.status(401).send("Invalid login Credentials");
   }
 });
+
+//hashing
+
+// const hashPasswword = async(password)=>{
+//   const hashPash = await bcrypt.hash(password, 10);
+//   console.log(hashPash);
+
+//   const comparePass = await bcrypt.compare('ankit123', hashPash);
+//   console.log(comparePass);
+// }
+
+// hashPasswword('ankit123')
 
 module.exports = router;

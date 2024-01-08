@@ -13,6 +13,22 @@ app.use(express.urlencoded({extended:false}))
 // recieve studebt router 
 app.use(memberRouter);
 
+
+const jwt = require('jsonwebtoken');
+
+// const authToken = async ()=>{
+//   const token = await jwt.sign(
+//     {_id:"65998b630199f5361ff99e84"},
+//     "ankitkumarvermalodhirajpoot",
+//     {expiresIn:'2 min'})
+//     console.log(token);
+
+//     const verifyToken = await jwt.verify(token,"ankitkumarvermalodhirajpoot");
+//     console.log(verifyToken);
+// }
+
+// authToken()
+
   // create server
   app.listen(port, (req, res) => {
     console.log(`server connected port no. ${port}`);
