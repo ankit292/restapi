@@ -2,6 +2,7 @@ const express = require("express");
 const router = new express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken')
+const auth = require('../middlewere/auth');
 
 // call Member scheema
 const Member = require("../model/members");
@@ -144,5 +145,10 @@ router.post("/login", async (req, res) => {
   }
 });
 
+
+// visit about page
+router.get('/about',auth, (req, res)=>{
+  console.log('your visit this page because u have a valid token');
+})
 
 module.exports = router;

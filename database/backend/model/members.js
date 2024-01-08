@@ -52,7 +52,7 @@ const memberScheema = new mongoose.Schema({
 // generate auth token
 memberScheema.methods.generatToken = async function() {
     try {
-        const token = jwt.sign({_id:this._id.toString()}, process.env.SECRET_KEY,{expiresIn:'2 min'});
+        const token = jwt.sign({_id:this._id.toString()}, 'ankitkumarvermalodhirajpoot',{expiresIn:'2 min'});
         this.tokens = this.tokens.concat({token});
         await this.save();
         return token;
