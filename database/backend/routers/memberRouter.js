@@ -1,6 +1,7 @@
 const express = require("express");
 const router = new express.Router();
 const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken')
 
 // call Member scheema
 const Member = require("../model/members");
@@ -94,9 +95,16 @@ router.post("/register", async (req, res) => {
     if (password === cpassword) {
       const member = new Member(req.body);
 
+      // genrate auth token
       const token = await member.generatToken();
-      console.log(token);
 
+      // save token in cookie
+      res.cookie("authToken", token,{
+        expires: new Date(Date.now() + 30000),
+        httpOnly:true
+      });
+      
+      // save schema 
       const craeteMember = await member.save();
       res.status(200).send(craeteMember);
     }else{
@@ -115,8 +123,19 @@ router.post("/login", async (req, res) => {
     const findEmail = await Member.findOne({ email });
     const comparePass = await bcrypt.compare(password, findEmail.password);
     if ( comparePass === true) {
+      // genrate auth token after login
+      // const token =  jwt.sign({_id: findEmail._id},'ankitkumarvermalodhirajpoot',{expiresIn:'2 min'});
+      // findEmail.tokens =  findEmail.tokens.concat({token})
+      const token = await findEmail.generatToken();
+
+      // save token in cookie
+      res.cookie("authToken", token,{
+        expires: new Date(Date.now() + 30000),
+        httpOnly:true
+      });
+
       res.send("Login Successfully");
-      console.log("Login Successfully");
+      console.log("Login Successfully ");
     } else {
       res.send("!Invalids login Credentials!");
     }
@@ -125,16 +144,5 @@ router.post("/login", async (req, res) => {
   }
 });
 
-//hashing
-
-// const hashPasswword = async(password)=>{
-//   const hashPash = await bcrypt.hash(password, 10);
-//   console.log(hashPash);
-
-//   const comparePass = await bcrypt.compare('ankit123', hashPash);
-//   console.log(comparePass);
-// }
-
-// hashPasswword('ankit123')
 
 module.exports = router;

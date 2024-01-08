@@ -1,6 +1,9 @@
+const dotenv = require('dotenv')
 const express = require("express");
 const app = express();
-const memberRouter = require('../backend/routers/memberRouter')
+const memberRouter = require('../backend/routers/memberRouter');
+dotenv.config({path:'../config.env'})
+
 const port = process.env.PORT || 8000;
 
 // call db connection file
@@ -12,26 +15,13 @@ app.use(express.urlencoded({extended:false}))
 
 // recieve studebt router 
 app.use(memberRouter);
-
-
-const jwt = require('jsonwebtoken');
-
-// const authToken = async ()=>{
-//   const token = await jwt.sign(
-//     {_id:"65998b630199f5361ff99e84"},
-//     "ankitkumarvermalodhirajpoot",
-//     {expiresIn:'2 min'})
-//     console.log(token);
-
-//     const verifyToken = await jwt.verify(token,"ankitkumarvermalodhirajpoot");
-//     console.log(verifyToken);
-// }
-
-// authToken()
+app.get('/', (req, res) => {
+  res.send(process.env.SECRET_KEY);
+})
 
   // create server
   app.listen(port, (req, res) => {
-    console.log(`server connected port no. ${port}`);
+    console.log(`server connected ${process.env.SECRET_KEY} port no. ${port}`);
   });
 
 
